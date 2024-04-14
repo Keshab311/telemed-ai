@@ -1,0 +1,27 @@
+/* HamburgerMenu.css */
+
+.hamburger-menu {
+  position: absolute;
+  top: 50px; /* Adjust according to your layout */
+  right: 10px; /* Adjust according to your layout */
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 1000; /* Ensure it appears above other content */
+}
+
+.menu-item {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+.menu-item:last-child {
+  border-top: 1px solid #ccc;
+}

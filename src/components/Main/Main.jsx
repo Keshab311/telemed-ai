@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Main.css";
 import { assets } from "../../assets/assets";
+import { FaRegUserCircle } from "react-icons/fa";
 import HamburgerMenu from "../Hamburger/Hamburger";
 import LoginForm from "../LoginForm/LoginForm"; // Import LoginForm
 
@@ -32,7 +33,9 @@ const Main = () => {
     <div className="main">
       <div className="nav">
         <p>Medi-cate</p>
-        <img src={assets.user_icon} alt="Settings" onClick={toggleMenu} />
+
+        <FaRegUserCircle className="user-icon" size={35} onClick={toggleMenu} />
+
         {/* Settings icon with onClick handler */}
         {isMenuOpen && (
           <HamburgerMenu

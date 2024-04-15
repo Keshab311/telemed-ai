@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./LoginForm.css";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom for routing
 import { GoogleLoginButton } from "react-social-login-buttons";
 import { LoginSocialGoogle } from "reactjs-social-login";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5"; // Import eye icons
@@ -45,13 +46,15 @@ const LoginForm = ({ onClose }) => {
           <a href="#">
             <p className="forgot-text">Forgot Password?</p>
           </a>
-          <a href="#">
-            <p className="newon-text">New to TeleMed.ai?</p>
-          </a>
+          <Link to="/signup" className="newon-link">
+            <p className="newon-text">New to TeleMed.ai? Register</p>
+          </Link>
         </div>
         <div className="buttons">
           <div className="sign-in">Sign In</div>
-          <div className="register">Register</div>
+          <Link to="/signup" className="register">
+            Register
+          </Link>
         </div>
         <div className="divider">
           <hr />

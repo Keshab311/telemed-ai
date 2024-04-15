@@ -29,6 +29,11 @@ const Main = () => {
     setIsMenuOpen(false); // Close the hamburger menu when opening the login form
   };
 
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    // Handle the uploaded file here
+  };
+
   return (
     <div className="main">
       <div className="nav">
@@ -76,11 +81,18 @@ const Main = () => {
         <div className="main-bottom">
           <div className="search-box">
             <input type="text" placeholder="Enter a prompt here" />
-            <div>
+            <label htmlFor="file-input">
               <img src={assets.gallery_icon} alt="" />
-              <img src={assets.mic_icon} alt="" />
-              <img src={assets.send_icon} alt="" />
-            </div>
+            </label>
+            <input
+              id="file-input"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handlePhotoUpload}
+            />
+            <img src={assets.mic_icon} alt="" />
+            <img src={assets.send_icon} alt="" />
           </div>
           <p className="bottom-info">
             Medi-cate may display inaccurate info, we are working on it, so

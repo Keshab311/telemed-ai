@@ -94,7 +94,9 @@ const SignUpForm = ({ onClose }) => {
         </Link>
         <div className="buttons">
           <div className="sign-up">Sign Up</div>
-          <div className="login">Login</div>
+          <Link to="/login">
+            <div className="login">Login</div>
+          </Link>
         </div>
       </form>
       {/* Close button for the sign-up form */}

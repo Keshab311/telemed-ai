@@ -4,6 +4,9 @@ import { assets } from "../../assets/assets";
 import { FaRegUserCircle } from "react-icons/fa";
 import HamburgerMenu from "../Hamburger/Hamburger";
 import LoginForm from "../LoginForm/LoginForm"; // Import LoginForm
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 const Main = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,6 +35,17 @@ const Main = () => {
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
     // Handle the uploaded file here
+  };
+
+  // Speech recognition hooks
+  const { transcript, resetTranscript } = useSpeechRecognition();
+
+  const startListening = () => {
+    SpeechRecognition.startListening({ continuous: true });
+  };
+
+  const stopListening = () => {
+    SpeechRecognition.stopListening();
   };
 
   return (
@@ -91,7 +105,7 @@ const Main = () => {
               style={{ display: "none" }}
               onChange={handlePhotoUpload}
             />
-            <img src={assets.mic_icon} alt="" />
+            <img src={assets.mic_icon} alt="" onClick={startListening} />
             <img src={assets.send_icon} alt="" />
           </div>
           <p className="bottom-info">

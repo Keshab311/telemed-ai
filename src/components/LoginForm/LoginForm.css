@@ -126,6 +126,8 @@ a {
 }
 .google-login {
   border-radius: 17.265px;
+  max-width: 300px;
+  margin: auto;
 }
 .divider {
   margin-top: 10px;

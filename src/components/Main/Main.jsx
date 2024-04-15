@@ -33,7 +33,7 @@ const Main = () => {
     <div className="main">
       <div className="nav">
         <p>Medi-cate</p>
-
+        <div className="user-icon"></div>
         <FaRegUserCircle className="user-icon" size={35} onClick={toggleMenu} />
 
         {/* Settings icon with onClick handler */}

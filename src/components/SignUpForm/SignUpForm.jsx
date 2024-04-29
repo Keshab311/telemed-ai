@@ -6,6 +6,7 @@ import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5"; // Import eye i
 const SignUpForm = ({ onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -32,6 +33,18 @@ const SignUpForm = ({ onClose }) => {
     <div className="wrapper">
       <form onSubmit={handleSubmit}>
         <h1>Sign Up</h1>
+        <div className="input-box">
+          <label>
+            <p className="name-title">FULL NAME</p>
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              placeholder="Enter your full name"
+              required
+            />
+          </label>
+        </div>
         <div className="input-box">
           <label>
             <p className="email-title">EMAIL</p>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Main.css";
 import { assets } from "../../assets/assets";
+import {supabase} from "../../lib/helper/supabaseclients";
 import { FaRegUserCircle } from "react-icons/fa";
 import HamburgerMenu from "../Hamburger/Hamburger";
 import LoginForm from "../LoginForm/LoginForm"; // Import LoginForm

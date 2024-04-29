@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./Main.css";
 import { assets } from "../../assets/assets";
-import {supabase} from "../../lib/helper/supabaseclients";
 import { FaRegUserCircle } from "react-icons/fa";
 import HamburgerMenu from "../Hamburger/Hamburger";
 import LoginForm from "../LoginForm/LoginForm"; // Import LoginForm
@@ -9,10 +8,43 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
+//import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
+//import { MainContainer, ChatContainer, MessageList, Message, MessageInput, TypingIndicator } from "@chatscope/chat-ui-kit-react"
+
+
 const Main = () => {
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginFormOpen, setIsLoginFormOpen] = useState(false); // State to manage login form visibility
+  const [inputValue, setInputValue] = useState('');
+
+  const [typing, setTyping] = useState(false);
+  const [messages, setMessages] = useState([
+    {
+      message: " ",
+      sender: "Telemed-ai"
+    }
+  ])
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+  // Access your API key as an environment variable (see "Set up your API key" above)
+  const genAI = new GoogleGenerativeAI("AIzaSyAzoWFUxkc5xtaz5PpkttVBGmGa1Dpqfow");
+  const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+
+  
+  async function handleSend() {
+
+    const result = await model.generateContent(inputValue);
+    const response = await result.response;
+    const text = response.text();
+    console.log(text);
+  }
 
   const handleLogin = () => {
     // Logic for logging in
@@ -77,25 +109,25 @@ const Main = () => {
         <div className="cards">
           <div className="card">
             <p>How's your health today</p>
-            <img src={assets.compass_icon} alt="" />
+            <img src={assets.send_icon} alt="" />
           </div>
           <div className="card">
             <p>Symptoms of common cold</p>
-            <img src={assets.bulb_icon} alt="" />
+            <img src={assets.send_icon} alt="" />
           </div>
           <div className="card">
             <p>Medicine for headache</p>
-            <img src={assets.message_icon} alt="" />
+            <img src={assets.send_icon} alt="" />
           </div>
           <div className="card">
             <p>Feeling nauseous</p>
-            <img src={assets.code_icon} alt="" />
+            <img src={assets.send_icon} alt="" />
           </div>
         </div>
 
         <div className="main-bottom">
           <div className="search-box">
-            <input type="text" placeholder="Enter a prompt here" />
+            <input type="text" placeholder="Enter a prompt here" onChange={handleInputChange} />
             <label htmlFor="file-input">
               <img src={assets.gallery_icon} alt="" />
             </label>
@@ -107,7 +139,7 @@ const Main = () => {
               onChange={handlePhotoUpload}
             />
             <img src={assets.mic_icon} alt="" onClick={startListening} />
-            <img src={assets.send_icon} alt="" />
+            <img src={assets.send_icon} alt="" onClick={handleSend} />
           </div>
           <p className="bottom-info">
             Medi-cate may display inaccurate info, we are working on it, so

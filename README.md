@@ -71,6 +71,24 @@ You need Node.js 18+, a [Supabase](https://supabase.com) project, a
    npm start
    ```
 
+## Deploy to Vercel
+
+Finish the Supabase setup above first, or the deployed chat can't answer.
+
+1. Sign in at [vercel.com](https://vercel.com) with GitHub and click
+   **Add New → Project**, then import `telemed-ai`. Vercel detects Create React
+   App; keep the default build settings (`npm run build`, output `build`).
+2. Under **Environment Variables**, add `REACT_APP_SUPABASE_URL` and
+   `REACT_APP_SUPABASE_ANON_KEY` with the same values as your `.env.local`.
+3. Click **Deploy**. You get a link like `https://telemed-ai.vercel.app`, and
+   every push to `main` redeploys it.
+4. In Supabase → Authentication → URL Configuration, set the Site URL to that
+   link and add it to Redirect URLs, so sign-up emails, password reset and
+   Google sign-in come back to the deployed site.
+
+`vercel.json` sends every path to `index.html`, so refreshing on `/login` or
+`/signup` works. (`public/_redirects` does the same on Netlify.)
+
 ## Scripts
 
 - `npm start`: development server on http://localhost:3000

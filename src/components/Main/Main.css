@@ -102,6 +102,7 @@
 
 .search-box input {
   flex: 1;
+  min-width: 0;
   background: transparent;
   border: none;
   outline: none;
@@ -298,4 +299,40 @@
   line-height: 1;
   color: inherit;
   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .main .nav {
+    padding: 14px 16px;
+  }
+
+  .main .greet {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+
+  .main .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main .card {
+    height: 120px;
+  }
+
+  .main-bottom {
+    padding: 0 12px;
+  }
+
+  .search-box {
+    gap: 12px;
+    padding: 8px 14px;
+  }
+
+  .search-box input {
+    font-size: 16px;
+  }
+
+  .message .bubble {
+    max-width: 100%;
+  }
 }

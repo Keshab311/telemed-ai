@@ -25,3 +25,14 @@
 .menu-item:last-child {
   border-top: 1px solid #ccc;
 }
+
+.menu-email {
+  padding: 6px 10px 10px;
+  font-size: 13px;
+  color: #6c6c6c;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 4px;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

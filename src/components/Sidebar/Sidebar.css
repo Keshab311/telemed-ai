@@ -64,3 +64,70 @@
   padding-right: 10px;
   cursor: pointer;
 }
+
+.sidebar {
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar.extended {
+  width: 260px;
+}
+
+.sidebar .top {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.sidebar .new-chat {
+  align-self: flex-start;
+}
+
+.sidebar .recent {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.sidebar .recent .recent-entry {
+  align-items: center;
+  padding-right: 10px;
+}
+
+.sidebar .recent .recent-entry p {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
+.sidebar .recent-entry.active {
+  background-color: #dcdff8;
+}
+
+.sidebar .recent-empty {
+  font-size: 13px;
+  color: #8a8a8a;
+  padding: 0 10px;
+}
+
+.sidebar .delete-chat {
+  display: flex;
+  visibility: hidden;
+  background: none;
+  border: none;
+  color: #6c6c6c;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.sidebar .recent-entry:hover .delete-chat {
+  visibility: visible;
+}
+
+.sidebar .delete-chat:hover {
+  color: #c0392b;
+}

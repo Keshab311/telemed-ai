@@ -1,154 +1,224 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { FaRegUserCircle } from "react-icons/fa";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import "./Main.css";
 import { assets } from "../../assets/assets";
-import { FaRegUserCircle } from "react-icons/fa";
 import HamburgerMenu from "../Hamburger/Hamburger";
-import LoginForm from "../LoginForm/LoginForm"; // Import LoginForm
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
+import { useAuth } from "../../context/AuthContext";
 
-//import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
-//import { MainContainer, ChatContainer, MessageList, Message, MessageInput, TypingIndicator } from "@chatscope/chat-ui-kit-react"
+const SUGGESTIONS = [
+  "How's your health today",
+  "Symptoms of common cold",
+  "Medicine for headache",
+  "Feeling nauseous",
+];
 
-
-const Main = () => {
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const Main = ({ messages, sending, loading, error, onDismissError, onSend }) => {
+  const { user, displayName, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoginFormOpen, setIsLoginFormOpen] = useState(false); // State to manage login form visibility
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
+  const [notice, setNotice] = useState(null);
+  const inputRef = useRef(null);
+  const userMenuRef = useRef(null);
+  const bottomRef = useRef(null);
+  const speechBaseRef = useRef("");
 
-  const [typing, setTyping] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      message: " ",
-      sender: "Telemed-ai"
+  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
+
+  // Keep the newest message in view.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, sending]);
+
+  // While the mic is on, show what's being said after any text typed before.
+  useEffect(() => {
+    if (listening) {
+      setInputValue([speechBaseRef.current, transcript].filter(Boolean).join(" "));
     }
-  ])
+  }, [transcript, listening]);
 
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
+  // Close the user menu when clicking anywhere else.
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const handleClick = (e) => {
+      if (!userMenuRef.current?.contains(e.target)) setIsMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [isMenuOpen]);
+
+  const toggleListening = () => {
+    if (!browserSupportsSpeechRecognition) {
+      setNotice("Voice input isn't supported in this browser. Try Chrome or Edge.");
+      return;
+    }
+    if (listening) {
+      SpeechRecognition.stopListening();
+    } else {
+      speechBaseRef.current = inputValue.trim();
+      resetTranscript();
+      SpeechRecognition.startListening({ continuous: true });
+    }
   };
 
-  const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-  // Access your API key as an environment variable (see "Set up your API key" above)
-  const genAI = new GoogleGenerativeAI("AIzaSyAzoWFUxkc5xtaz5PpkttVBGmGa1Dpqfow");
-  const model = genAI.getGenerativeModel({ model: "gemini-pro"});
-
-  
-  async function handleSend() {
-
-    const result = await model.generateContent(inputValue);
-    const response = await result.response;
-    const text = response.text();
-    console.log(text);
-  }
-
-  const handleLogin = () => {
-    // Logic for logging in
-    setIsAuthenticated(true);
+  const handleSend = async () => {
+    const text = inputValue.trim();
+    if (!text || sending) return;
+    if (listening) SpeechRecognition.stopListening();
+    resetTranscript();
+    setInputValue("");
+    setNotice(null);
+    const result = await onSend(text);
+    if (result?.restoreInput) setInputValue(result.restoreInput);
   };
 
-  const handleLogout = () => {
-    // Logic for logging out
-    setIsAuthenticated(false);
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen); // Toggle the menu visibility
-  };
-
-  const toggleLoginForm = () => {
-    setIsLoginFormOpen(!isLoginFormOpen); // Toggle the login form visibility
-    setIsMenuOpen(false); // Close the hamburger menu when opening the login form
+  const applySuggestion = (text) => {
+    setInputValue(text);
+    inputRef.current?.focus();
   };
 
   const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
-    // Handle the uploaded file here
+    e.target.value = "";
+    setNotice("Uploading medical records is coming in the next update.");
   };
 
-  // Speech recognition hooks
-  const { transcript, resetTranscript } = useSpeechRecognition();
-
-  const startListening = () => {
-    SpeechRecognition.startListening({ continuous: true });
+  const handleLogout = async () => {
+    setIsMenuOpen(false);
+    await signOut();
   };
 
-  const stopListening = () => {
-    SpeechRecognition.stopListening();
-  };
+  const showWelcome = messages.length === 0 && !loading;
 
   return (
     <div className="main">
       <div className="nav">
         <p>Medi-cate</p>
-        <div className="user-icon"></div>
-        <FaRegUserCircle className="user-icon" size={35} onClick={toggleMenu} />
-
-        {/* Settings icon with onClick handler */}
-        {isMenuOpen && (
-          <HamburgerMenu
-            isAuthenticated={isAuthenticated}
-            onLogin={handleLogin}
-            onLogout={handleLogout}
-            onOpenLoginForm={toggleLoginForm} // Pass the toggleLoginForm function
-            onClose={() => setIsMenuOpen(false)} // Close the menu
+        <div className="user-menu" ref={userMenuRef}>
+          <FaRegUserCircle
+            className="user-icon"
+            size={35}
+            onClick={() => setIsMenuOpen((open) => !open)}
           />
+          {isMenuOpen && (
+            <HamburgerMenu
+              email={user?.email}
+              onLogout={handleLogout}
+              onClose={() => setIsMenuOpen(false)}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="main-container">
+        {showWelcome ? (
+          <>
+            <div className="greet">
+              <p>
+                <span>Hello, {displayName}</span>
+              </p>
+              <p>How can I help you today</p>
+            </div>
+            <div className="cards">
+              {SUGGESTIONS.map((text) => (
+                <div className="card" key={text} onClick={() => applySuggestion(text)}>
+                  <p>{text}</p>
+                  <img src={assets.send_icon} alt="" />
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="messages">
+            {loading && <p className="loading-chat">Loading chat…</p>}
+            {messages.map((m) => (
+              <div key={m.id} className={`message ${m.role}`}>
+                {m.role === "assistant" && (
+                  <img className="avatar" src={assets.gemini_icon} alt="" />
+                )}
+                <div className="bubble">
+                  {m.role === "assistant" ? (
+                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                  ) : (
+                    m.content
+                  )}
+                </div>
+              </div>
+            ))}
+            {sending && (
+              <div className="message assistant">
+                <img className="avatar spinning" src={assets.gemini_icon} alt="" />
+                <div className="bubble typing" aria-label="Medi-cate is typing">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
         )}
       </div>
-      <div className="main-container">
-        <div className="greet">
-          <p>
-            <span>Hello, Dev</span>
-          </p>
-          <p>How can I help you today</p>
-        </div>
-        <div className="cards">
-          <div className="card">
-            <p>How's your health today</p>
-            <img src={assets.send_icon} alt="" />
-          </div>
-          <div className="card">
-            <p>Symptoms of common cold</p>
-            <img src={assets.send_icon} alt="" />
-          </div>
-          <div className="card">
-            <p>Medicine for headache</p>
-            <img src={assets.send_icon} alt="" />
-          </div>
-          <div className="card">
-            <p>Feeling nauseous</p>
-            <img src={assets.send_icon} alt="" />
-          </div>
-        </div>
 
-        <div className="main-bottom">
-          <div className="search-box">
-            <input type="text" placeholder="Enter a prompt here" onChange={handleInputChange} />
-            <label htmlFor="file-input">
-              <img src={assets.gallery_icon} alt="" />
-            </label>
-            <input
-              id="file-input"
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handlePhotoUpload}
-            />
-            <img src={assets.mic_icon} alt="" onClick={startListening} />
-            <img src={assets.send_icon} alt="" onClick={handleSend} />
+      <div className="main-bottom">
+        {error && (
+          <div className="banner error" role="alert">
+            <span>{error}</span>
+            <button onClick={onDismissError} aria-label="Dismiss">×</button>
           </div>
-          <p className="bottom-info">
-            Medi-cate may display inaccurate info, we are working on it, so
-            consult a doctor.
-          </p>
+        )}
+        {notice && (
+          <div className="banner info">
+            <span>{notice}</span>
+            <button onClick={() => setNotice(null)} aria-label="Dismiss">×</button>
+          </div>
+        )}
+        <div className="search-box">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder={listening ? "Listening… click the mic to stop" : "Enter a prompt here"}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <label htmlFor="file-input" title="Upload a medical record">
+            <img src={assets.gallery_icon} alt="Upload" />
+          </label>
+          <input
+            id="file-input"
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={handlePhotoUpload}
+          />
+          <img
+            src={assets.mic_icon}
+            alt={listening ? "Stop voice input" : "Start voice input"}
+            title={listening ? "Stop voice input" : "Voice input"}
+            className={listening ? "mic listening" : "mic"}
+            onClick={toggleListening}
+          />
+          <img
+            src={assets.send_icon}
+            alt="Send"
+            title="Send"
+            className={!inputValue.trim() || sending ? "send disabled" : "send"}
+            onClick={handleSend}
+          />
         </div>
+        <p className="bottom-info">
+          Medi-cate may display inaccurate info, we are working on it, so consult a doctor.
+        </p>
       </div>
-      {/* Render the login form if isLoginFormOpen is true */}
-      {isLoginFormOpen && <LoginForm onClose={toggleLoginForm} />}
     </div>
   );
 };

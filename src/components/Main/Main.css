@@ -1,8 +1,9 @@
 .main {
   flex: 1;
-  min-height: 100vh;
-  padding-bottom: 15vh;
-  position: relative;
+  min-width: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .main .nav {
@@ -21,8 +22,11 @@
 }
 
 .main-container {
+  flex: 1;
+  width: 100%;
   max-width: 900px;
-  margin: auto;
+  margin: 0 auto;
+  overflow-y: auto;
 }
 
 .main .greet {
@@ -75,12 +79,10 @@
 }
 
 .main-bottom {
-  position: absolute;
-  bottom: 0;
   width: 100%;
   max-width: 900px;
   padding: 0px 20px;
-  margin: auto;
+  margin: 0 auto;
 }
 
 .search-box {
@@ -118,4 +120,182 @@
   margin: 15px auto;
   text-align: center;
   font-weight: 300;
+}
+
+.user-menu {
+  position: relative;
+  display: flex;
+}
+
+/* ---------- conversation ---------- */
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px 20px 30px;
+}
+
+.loading-chat {
+  color: #6c6c6c;
+  text-align: center;
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message .avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.message .avatar.spinning {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.message .bubble {
+  max-width: 80%;
+  padding: 12px 18px;
+  border-radius: 20px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #1f1f1f;
+  overflow-wrap: anywhere;
+}
+
+.message.user .bubble {
+  background-color: #6c6c6c;
+  color: #fff;
+  border-bottom-right-radius: 6px;
+  white-space: pre-wrap;
+}
+
+.message.assistant .bubble {
+  background-color: #f0f4f9;
+  border-top-left-radius: 6px;
+}
+
+.message.assistant .bubble p {
+  margin: 0 0 10px;
+}
+
+.message.assistant .bubble ul,
+.message.assistant .bubble ol {
+  margin: 0 0 10px 22px;
+}
+
+.message.assistant .bubble li {
+  margin-bottom: 4px;
+}
+
+.message.assistant .bubble > :last-child {
+  margin-bottom: 0;
+}
+
+.message.assistant .bubble h1,
+.message.assistant .bubble h2,
+.message.assistant .bubble h3 {
+  font-size: 17px;
+  margin: 8px 0;
+}
+
+.bubble.typing {
+  display: flex;
+  gap: 5px;
+  padding: 18px;
+}
+
+.bubble.typing span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8b86e0;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.bubble.typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.bubble.typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+/* ---------- input bar ---------- */
+
+.search-box img.mic.listening {
+  background-color: #ff5564;
+  border-radius: 50%;
+  padding: 4px;
+  width: 32px;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 85, 100, 0.25);
+  }
+}
+
+.search-box img.send.disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+.banner.error {
+  background: #fde2e2;
+  color: #a12626;
+}
+
+.banner.info {
+  background: #f0f4f9;
+  color: #3a3a3a;
+}
+
+.banner button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
 }

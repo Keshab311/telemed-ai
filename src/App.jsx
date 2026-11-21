@@ -1,37 +1,40 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Sidebar from "./components/Sidebar/Sidebar";
-import Main from "./components/Main/Main";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import ChatPage from "./components/ChatPage/ChatPage";
 import LoginForm from "./components/LoginForm/LoginForm";
 import SignUpForm from "./components/SignUpForm/SignUpForm";
 
-const App = () => {
-  return (
+// Only logged-in users can reach the chat.
+const RequireAuth = ({ children }) => {
+  const { session, loading } = useAuth();
+  if (loading) return null;
+  return session ? children : <Navigate to="/login" replace />;
+};
+
+// Logged-in users skip the login and sign-up pages.
+const GuestOnly = ({ children }) => {
+  const { session, loading } = useAuth();
+  if (loading) return null;
+  return session ? <Navigate to="/" replace /> : children;
+};
+
+const App = () => (
+  <AuthProvider>
     <Router>
       <Routes>
-        <Route path="/" element={<MainLayout />} />
-        <Route path="/login" element={<LoginFormLayout />} />
-        <Route path="/signup" element={<SignUpFormLayout />} />
+        <Route path="/" element={<RequireAuth><ChatPage /></RequireAuth>} />
+        <Route path="/login" element={<GuestOnly><LoginForm /></GuestOnly>} />
+        <Route path="/signup" element={<GuestOnly><SignUpForm /></GuestOnly>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
-  );
-};
-
-const MainLayout = () => {
-  return (
-    <>
-      <Sidebar />
-      <Main />
-    </>
-  );
-};
-
-const LoginFormLayout = () => {
-  return <LoginForm />;
-};
-
-const SignUpFormLayout = () => {
-  return <SignUpForm />;
-};
+  </AuthProvider>
+);
 
 export default App;
